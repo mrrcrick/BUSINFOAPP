@@ -4,6 +4,9 @@ from flask import jsonify
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
+from app.businformation import Businformation
+import os
+
 db = SQLAlchemy(app)
 
 
@@ -18,10 +21,15 @@ def index():
 
 @app.route('/busarrivals')
 def busarrivals():
+    times =[]
     data = requests.get('https://api.tfl.gov.uk/StopPoint/490009333W/arrivals')
+    info = data.json()
+    for bustime in info:
+        print("----------------- \n")
+        print(bustime)
     result = db.engine.execute("INSERT INTO tfl (bearing) VALUES (1);")
     result = db.engine.execute("SELECT * from tfl")
-    print (result.fetchall())
+    #print (result.fetchall())
     resp = Response(data)
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
