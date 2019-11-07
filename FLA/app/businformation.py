@@ -1,9 +1,6 @@
 from flask import render_template,request, Response
 from app import app
 import requests
-#from flask_sqlalchemy import SQLAlchemy
-#from sqlalchemy import create_engine
-#from app.businformation import Businformation
 import os
 import datetime
 import json
@@ -15,14 +12,26 @@ class Businformation:
     con =''
     arrivaltable = []
     def __init__(self):
-        v= 999
         self.arrivaltable =[]
-    
+
+    def log_error(self,e):
+        f=open("logs/log.txt", "a+")
+        now = datetime.datetime.now()
+        currenttime = now.strftime('%d-%m-%Y-%H:%M:%S') + ('-%02d' % (now.microsecond / 10000))
+        f.write('\n')
+        f.write(str(currenttime)+' '+str(e))
+        #f.write(e)
+        f.close()
+
     def update(self):
-        dbpath = os.path.join(os.getcwd(),'/database/tfl.db')
-        dbpath = 'database/tfl.db'
-        con = sqlite3.connect(dbpath)
-        cur = con
+        try:
+            dbpath = 'database/tfl.db'
+            con = sqlite3.connect(dbpath)
+            cur = con
+        except sqlite3.Error as e:
+            print("Error could not connect")
+            log_error(e)
+            return "error"
 
         data = requests.get('https://api.tfl.gov.uk/StopPoint/490009333W/arrivals')
         info = data.json()
@@ -34,27 +43,33 @@ class Businformation:
                 currenttime = now.strftime('%d-%m-%Y-%H:%M:%S') + ('-%02d' % (now.microsecond / 10000))
                 stringify = json.dumps(businformation )
                 values_to_insert.append((stringify,currenttime))
-            cur.executemany("INSERT INTO tfl (data,timestamp) VALUES (?, ?)", values_to_insert)
-            con.commit()
+            try:
+                cur.executemany("INSERT INTO tfl (data,timestamp) VALUES (?, ?)", values_to_insert)
+                con.commit()
+            except sqlite3.Error as e:
+                self.log_error(e)
+
         else:
             print("no data")
 
 
-        #for bustime in info:
+    #for bustime in info:
     def gettable(self):
         data = self.settable()
         return data
-
+   # load database into class object
     def settable(self):
         tabledata=[]
-        count =0
-        dbpath = os.path.join(os.getcwd(),'/database/tfl.db')
-        dbpath = 'database/tfl.db'
-        con = sqlite3.connect(dbpath)
-        cur = con
-        info = cur.execute("SELECT * from tfl ORDER BY tfl_id DESC")
+        try:
+            dbpath = 'database/tfl.db'
+            con = sqlite3.connect(dbpath)
+            cur = con
+            info = cur.execute("SELECT * from tfl ORDER BY tfl_id DESC")
+        except sqlite3.Error as e:
+            print("Error database")
+            self.log_error(e)
+            return "error"
         text = list(info)
-
         if (info):
             for row in text:
                 arrivalinfo = {}
@@ -84,151 +99,25 @@ class Businformation:
                 arrivalinfo['timing_received'] = jsondata['timing']['received']
                 arrivalinfo['timing_sent'] = jsondata['timing']['sent']
                 arrivalinfo['timing_source'] = jsondata['timing']['source']
+                #set human readable arrival time
+                arrivetime = arrivalinfo['expectedArrival'].split('T')
+                humantime = (arrivetime[1].strip("Z"))
+                arrivalinfo['human_time_arriv'] = humantime
                 tabledata.append(arrivalinfo)
+            self.arrivaltable = tabledata
             return tabledata
-
         else:
             print("nothing in table")
-
-
         return self.info
-
-
 
     def clear(self):
-        dbpath = os.path.join(os.getcwd(),'/database/tfl.db')
-        dbpath = 'database/tfl.db'
-        con = sqlite3.connect(dbpath)
-        cur = con
-        info = cur.execute("DELETE from tfl")
-        con.commit()
-
-    #setters
-    def setbearing(bear):
-        self.info.bearing = bear
-
-    def setcurrentLocation(loc):
-        self.info.currentLocation = loc
-
-    def setdestinationName(destName):
-        self.info.destinationName = destName
-
-    def setdestinationNaptanId(id):
-        self.info.destinationNaptanId = id
-
-    def setdirection(dir):
-        self.info.direction = dir
-
-    def setexpectedArrival(arr):
-        self.info.expectedArrival = arr
-
-    def setid(id):
-        self.info.id = id
-
-    def setlineId(lineId):
-        self.info.lineId = lineId
-
-    def setlineName(lineName):
-        self.info.lineName = lineName
-
-    def setmodeName(modeName):
-        self.info.modeName = modeName
-
-    def setnaptanId(napId):
-        self.info.naptanId = napId
-
-    def setoperationType(optype):
-        self.info.operationType = optype
-
-    def setplatformName(setplat):
-        self.info.platformName = setplat
-
-    def setstationName(statname):
-        self.info.stationName = statname
-
-    def settimeToLive(ttliv):
-        self.info.timeToLive = ttliv
-
-    def settiming_countdownServerAdjustment(countadj):
-        self.info.timing_countdownServerAdjustment = countadj
-
-    def settiming_insert(settimeins):
-        self.info.timing_insert = settimeins
-
-    def settiming_read(read):
-        self.info.timing_read = read
-
-    def settiming_received(setre):
-        self.info.timing_received = setre
-
-    def settiming_sent(setse):
-        self.info.timing_sent = setse
-
-    def settiming_source(settimesrc):
-        self.info.timing_source = settimesrc
-
-    #getters
-    def getbearing():
-        return self.info.bearing
-
-    def getcurrentLocation():
-        return self.info.currentLocation
-
-    def getdestinationName():
-
-        return self.info.destinationName
-    def getdestinationNaptanId():
-        return self.info.destinationNaptanId
-
-    def getdirection():
-        return self.info.direction
-
-    def getexpectedArrival():
-        return self.info.expectedArrival
-
-    def getid():
-        return self.info.id
-
-    def getlineId():
-        return self.info.lineId
-
-    def getlineName():
-        return self.info.lineName
-
-    def getmodeName():
-        return self.info.modeName
-
-    def getnaptanId():
-        return self.info.naptanId
-
-    def getoperationType():
-        return self.info.operationType
-
-    def getplatformName():
-        return self.info.platformName
-
-    def getstationName():
-        return self.info.stationName
-
-    def gettimeToLive():
-        return self.info.timeToLive
-
-    def gettiming_countdownServerAdjustment():
-        return self.info.timing_countdownServerAdjustment
-
-    def gettiming_insert():
-        return self.info.timing_insert
-
-    def gettiming_read():
-        return self.info.timing_read
-
-    def gettiming_received():
-        return self.info.timing_received
-
-    def gettiming_sent():
-        return self.info.timing_sent
-
-    def gettiming_source():
-        return self.info.timing_source
-    def getinformation():
-        return self.info
+        try:
+            dbpath = 'database/tfl.db'
+            con = sqlite3.connect(dbpath)
+            cur = con
+            info = cur.execute("DELETE from tfl")
+            con.commit()
+        except sqlite3.Error as e:
+            print("Error could not connect")
+            self.log_error(e)
+            return "error"

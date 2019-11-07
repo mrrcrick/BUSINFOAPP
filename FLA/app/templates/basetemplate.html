@@ -5,15 +5,18 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/accordian.css') }}">
         <script type="text/javascript" src="{{ url_for('static', filename='script/jquery-3.4.1.min.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='script/tfl.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='script/bootstrap.min.js') }}"></script>
         <title>Bus Information</title>
     </head>
     <body>
-        <a href="index">Bus Arrivals </a>
-        <a href="timestamp"> Time Stamped Arrivals </a>
+        <div class="main-butt-panel" style="margin-left:32%;width:100%;">
+            <a href="index" class="btn btn-primary">Bus Arrivals </a>
+            <a href="timestamp" class="btn btn-primary"> Time Stamped Arrivals </a>
+            <a href="clear" class="btn btn-danger"> Cear Bus Arrival Database </a>
+        </div>
+
         {% block content %}
 
 

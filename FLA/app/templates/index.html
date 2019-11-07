@@ -6,9 +6,10 @@
       <div class="col-lg-12 text-center">
        <h2> BUS Info </h2>
        {% for info in information %}
-        <a href="#panel{{ info.tfl_id }}" class="btn btn-primary main-tab" data-toggle="collapse"><b>STATION:</b> {{info.stationName}}
-            <b>BUS:</b> {{info.lineName}} <b>REG</b> {{info.vehicleId}} <b>TO</b>: {{info.towards}}
-            <b>EXPECTED ARRIVAL</b>: {{info.expectedArrival}} CLICK FOR MORE....</a>
+        <a href="#panel{{ info.tfl_id }}" class="btn btn-primary main-tab" data-toggle="collapse" style="margin-bottom:5px;">
+            <b>STATION: </b> {{info.stationName}}
+            <b>BUS:</b> {{info.lineName}} <b>REG: </b> {{info.vehicleId}} <b>TO: </b> {{info.towards}}
+            <b>EXPECTED ARRIVAL: </b> {{info.human_time_arriv}} CLICK FOR MORE....</a>
         <div id="panel{{ info.tfl_id }}" class="collapse">
          <div class="info-text">
              <p><b>timestamp: {{info.timestamp}}</p></b>

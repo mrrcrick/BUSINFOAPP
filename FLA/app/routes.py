@@ -6,54 +6,31 @@ from app.businformation import Businformation
 import os
 import json
 
-
-
-
-
+busarrival = Businformation()
+# show 5 most recent updates
 @app.route('/')
 @app.route('/index')
 def index():
-    busarrival = Businformation()
-    busarrival.update()
-    info = (busarrival.gettable())
-    return render_template('index.html',information = info)
-
+    updaterr = busarrival.update()
+    info = busarrival.gettable()
+    if (isinstance(updaterr, str) or isinstance(info , str)):
+        return render_template("dbaseerror.html")
+    else:
+        return render_template('index.html',information = info[0:5])
+# show list  of api calls made with with timestamp
 @app.route('/timestamp')
 def timestamp():
-    busarrival = Businformation()
-    busarrival.update()
-    info = (busarrival.gettable())
-    return render_template('timestamp.html',information = info)
+    info = busarrival.gettable()
+    if (isinstance(info , str)):
+        return render_template("dbaseerror.html")
+    else:
+        return render_template('timestamp.html',information = info)
 
-
-@app.route('/busarrivals')
-def busarrivals():
-    times =[]
-    #data = requests.get('https://api.tfl.gov.uk/StopPoint/490009333W/arrivals')
-    #info = data.json()
-    #for bustime in info:
-    #    print("----------------- \n")
-    #    print(bustime)
-    #result = db.engine.execute("INSERT INTO tfl (bearing) VALUES (1);")
-    #result = db.engine.execute("SELECT * from tfl")
-    #print (result.fetchall())
-    busarrival = Businformation()
-    #busarrival.update()
-
-    resp = Response(busarrival.gettable())
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
-
-@app.route('/update', methods = ['POST', 'PUT' ,'GET'])
-def update():
-    try:
-        return request.method
-    except:
-        #print "This didn't work."
-        return "not found"
-
+# clear the database
 @app.route('/clear')
 def clear():
-    busarrival = Businformation()
-    busarrival.clear()
-    return  "clear"
+    err = busarrival.clear()
+    if (isinstance(err,str)):
+        return render_template("dbaseerror.html")
+    else:
+        return  render_template("deleted.html")

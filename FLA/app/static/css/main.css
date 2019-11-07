@@ -1,9 +1,12 @@
 .main-tab {
-    background-color: :#000f9;
+    background-color: #113b92;
     font-family:"helvetica neue", arial, verdana, sans-serif;
+    margin-bottom: 5px;
 }
 
-
+.main-butt-panel {
+    display: inline-block;
+}
 .panel-body{
     overflow-y: scroll;
 }

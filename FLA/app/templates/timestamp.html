@@ -6,8 +6,8 @@
       <div class="col-lg-12 text-center">
        <h2> Time Stamped Expected Arrivals</h2>
        {% for info in information %}
-        <a href="#panel{{ info.tfl_id }}" class="btn btn-primary main-tab" data-toggle="collapse">
-            <b>TIME STAMP:</b> {{info.timestamp}} <b>EXPECTED ARRIVAL:</b> {{info.expectedArrival}}  CLICK FOR MORE....</a>
+        <a href="#panel{{ info.tfl_id }}" class="btn btn-primary main-tab" data-toggle="collapse" style="margin-bottom:5px;">
+            <b>TIME STAMP:</b> {{info.timestamp}} <b>EXPECTED ARRIVAL:</b> {{info.human_time_arriv}}  CLICK FOR MORE....</a>
         <div id="panel{{ info.tfl_id }}" class="collapse">
          <div class="info-text">
              <p><b>timestamp: {{info.timestamp}}</p></b>
