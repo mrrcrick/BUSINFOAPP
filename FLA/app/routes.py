@@ -2,35 +2,45 @@ from flask import render_template,request, Response
 from app import app
 from flask import jsonify
 import requests
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
 from app.businformation import Businformation
 import os
+import json
 
-db = SQLAlchemy(app)
+
 
 
 
 @app.route('/')
 @app.route('/index')
 def index():
-    data = requests.get('https://api.tfl.gov.uk/StopPoint/490009333W/arrivals')
-    resp = Response(data)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    busarrival = Businformation()
+    busarrival.update()
+    info = (busarrival.gettable())
+    return render_template('index.html',information = info)
+
+@app.route('/timestamp')
+def timestamp():
+    busarrival = Businformation()
+    busarrival.update()
+    info = (busarrival.gettable())
+    return render_template('timestamp.html',information = info)
+
 
 @app.route('/busarrivals')
 def busarrivals():
     times =[]
-    data = requests.get('https://api.tfl.gov.uk/StopPoint/490009333W/arrivals')
-    info = data.json()
-    for bustime in info:
-        print("----------------- \n")
-        print(bustime)
-    result = db.engine.execute("INSERT INTO tfl (bearing) VALUES (1);")
-    result = db.engine.execute("SELECT * from tfl")
+    #data = requests.get('https://api.tfl.gov.uk/StopPoint/490009333W/arrivals')
+    #info = data.json()
+    #for bustime in info:
+    #    print("----------------- \n")
+    #    print(bustime)
+    #result = db.engine.execute("INSERT INTO tfl (bearing) VALUES (1);")
+    #result = db.engine.execute("SELECT * from tfl")
     #print (result.fetchall())
-    resp = Response(data)
+    busarrival = Businformation()
+    #busarrival.update()
+
+    resp = Response(busarrival.gettable())
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
 
@@ -41,3 +51,9 @@ def update():
     except:
         #print "This didn't work."
         return "not found"
+
+@app.route('/clear')
+def clear():
+    busarrival = Businformation()
+    busarrival.clear()
+    return  "clear"

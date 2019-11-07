@@ -9,6 +9,10 @@ import datetime
 import json
 import sqlite3
 
+
+
+#db = SQLAlchemy(app)
+
 class Businformation:
 
     info = {}
@@ -17,7 +21,9 @@ class Businformation:
     def __init__(self):
         v= 999
         self.arrivaltable =[]
-    
+        #self.settable()
+
+
     def update(self):
         dbpath = os.path.join(os.getcwd(),'/database/tfl.db')
         dbpath = 'database/tfl.db'
@@ -34,6 +40,9 @@ class Businformation:
                 currenttime = now.strftime('%d-%m-%Y-%H:%M:%S') + ('-%02d' % (now.microsecond / 10000))
                 stringify = json.dumps(businformation )
                 values_to_insert.append((stringify,currenttime))
+                #print(")))))))))))))))))))))))))))))))))))\n")
+                #print(values_to_insert)
+                #print(values_to_insert)
             cur.executemany("INSERT INTO tfl (data,timestamp) VALUES (?, ?)", values_to_insert)
             con.commit()
         else:
@@ -46,45 +55,59 @@ class Businformation:
         return data
 
     def settable(self):
-        tabledata=[]
+        tabledata_all = []
         count =0
         dbpath = os.path.join(os.getcwd(),'/database/tfl.db')
         dbpath = 'database/tfl.db'
         con = sqlite3.connect(dbpath)
         cur = con
-        info = cur.execute("SELECT * from tfl ORDER BY tfl_id DESC")
+        info = cur.execute("SELECT * from tfl")
         text = list(info)
+        for i in text:
+            tab ={}
+            tab['tfl_id'] = i[0]
+            tab['time_stamp'] = i[2]
+            tab['data'] = (i[1] )
+            print('##############################\n')
+            tabledata_all.append(tab)
+            count = count + 1
+            print(i)
+        return (tabledata_all)
 
+        for el in text :
+            print('++++++++++++++++++++\n')
+            print(el)
+        #print(info)
         if (info):
             for row in text:
-                arrivalinfo = {}
                 jsondata =  json.loads(row[1] )
-                arrivalinfo['tfl_id'] = row[0]
-                arrivalinfo['timestamp'] = row[2]
-                arrivalinfo['vehicleId'] = jsondata['vehicleId']
-                arrivalinfo['towards'] = jsondata['towards']
-                arrivalinfo['bearing']= jsondata['bearing']
-                arrivalinfo['currentLocation'] = jsondata['currentLocation']
-                arrivalinfo['destinationName'] = jsondata['destinationName']
-                arrivalinfo['destinationNaptanId'] = jsondata['destinationNaptanId']
-                arrivalinfo['direction'] = jsondata['direction']
-                arrivalinfo['expectedArrival'] = jsondata['expectedArrival']
-                arrivalinfo['id'] = jsondata['id']
-                arrivalinfo['lineId'] = jsondata['lineId']
-                arrivalinfo['lineName'] = jsondata['lineName']
-                arrivalinfo['modeName'] = jsondata['modeName']
-                arrivalinfo['naptanId'] = jsondata['naptanId']
-                arrivalinfo['operationType'] = jsondata['operationType']
-                arrivalinfo['platformName'] = jsondata['platformName']
-                arrivalinfo['stationName'] = jsondata['stationName']
-                arrivalinfo['timeToLive'] = jsondata['timeToLive']
-                arrivalinfo['timing_countdownServerAdjustment'] = jsondata['timing']['countdownServerAdjustment']
-                arrivalinfo['timing_insert'] = jsondata['timing']['insert']
-                arrivalinfo['timing_read'] = jsondata['timing']['read']
-                arrivalinfo['timing_received'] = jsondata['timing']['received']
-                arrivalinfo['timing_sent'] = jsondata['timing']['sent']
-                arrivalinfo['timing_source'] = jsondata['timing']['source']
-                tabledata.append(arrivalinfo)
+                self.info['tfl_id'] = row[0]
+                self.info['timestamp'] = row[2]
+                self.info['bearing']= jsondata['bearing']
+                self.info['currentLocation'] = jsondata['currentLocation']
+                self.info['destinationName'] = jsondata['destinationName']
+                self.info['destinationNaptanId'] = jsondata['destinationNaptanId']
+                self.info['direction'] = jsondata['direction']
+                self.info['expectedArrival'] = jsondata['expectedArrival']
+                self.info['id'] = jsondata['id']
+                self.info['lineId'] = jsondata['lineId']
+                self.info['lineName'] = jsondata['lineName']
+                self.info['modeName'] = jsondata['modeName']
+                self.info['naptanId'] = jsondata['naptanId']
+                self.info['operationType'] = jsondata['operationType']
+                self.info['platformName'] = jsondata['platformName']
+                self.info['stationName'] = jsondata['stationName']
+                self.info['timeToLive'] = jsondata['timeToLive']
+                self.info['timing_countdownServerAdjustment'] = jsondata['timing']['countdownServerAdjustment']
+                self.info['timing_insert'] = jsondata['timing']['insert']
+                self.info['timing_read'] = jsondata['timing']['read']
+                self.info['timing_received'] = jsondata['timing']['received']
+                self.info['timing_sent'] = jsondata['timing']['sent']
+                self.info['timing_source'] = jsondata['timing']['source']
+                tabledata.append(self.info)
+                print('@@@@@@@@@@@@@@@@@@@@@@@++++++++++++++++++++@@@@@@\n')
+
+
             return tabledata
 
         else:
@@ -102,6 +125,7 @@ class Businformation:
         cur = con
         info = cur.execute("DELETE from tfl")
         con.commit()
+        print("************clear *******************")
 
     #setters
     def setbearing(bear):

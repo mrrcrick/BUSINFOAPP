@@ -1,0 +1,24 @@
+.main-tab {
+    background-color: :#000f9;
+    font-family:"helvetica neue", arial, verdana, sans-serif;
+}
+
+
+.panel-body{
+    overflow-y: scroll;
+}
+.info-text {
+    padding: 15px;
+    font-size:20px;
+    margin-left: 20%;
+    width: 70%;
+}
+
+.collapse.in {
+    overflow-y: scroll;
+    width:90%;
+
+}
+.collapse {
+
+}

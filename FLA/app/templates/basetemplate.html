@@ -2,10 +2,21 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
-        <title></title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/accordian.css') }}">
+        <script type="text/javascript" src="{{ url_for('static', filename='script/jquery-3.4.1.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='script/tfl.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='script/bootstrap.min.js') }}"></script>
+        <title>Bus Information</title>
     </head>
     <body>
+        <a href="index">Bus Arrivals </a>
+        <a href="timestamp"> Time Stamped Arrivals </a>
         {% block content %}
+
+
         {% endblock %}
 
     </body>
